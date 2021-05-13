@@ -29,8 +29,7 @@ class MainActivity : AppCompatActivity()
             DataManager.courses.values.toList())
         adapterCourses.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
 
-        var spinnerCourses = findViewById<Spinner>(R.id.spinnerCourses)
-        spinnerCourses.adapter = adapterCourses
+        binding.layoutContentMain.spinnerCourses.adapter = adapterCourses
 
         notePosition = intent.getIntExtra(EXTRA_NOTE_POSITON, POSITION_NOT_SET)
 
@@ -41,10 +40,8 @@ class MainActivity : AppCompatActivity()
     private fun displayNote()
     {
         val note = DataManager.notes[notePosition]
-        var textNoteTitle = findViewById<EditText>(R.id.textNoteTitle)
-        var textNoteText = findViewById<EditText>(R.id.textNoteText)
-        textNoteTitle.setText(note.title)
-        textNoteText.setText(note.text)
+        binding.layoutContentMain.textNoteTitle.setText(note.title)
+        binding.layoutContentMain.textNoteText.setText(note.text)
 
         val coursePosition = DataManager.courses.values.indexOf(note.course)
         var spinnerCourses = findViewById<Spinner>(R.id.spinnerCourses)

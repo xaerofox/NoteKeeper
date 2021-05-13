@@ -25,13 +25,11 @@ class NoteListActivity : AppCompatActivity() {
             startActivity(activityIntent)
         }
 
-        //How to get binding version without the following approach?
-        var listNotes = findViewById<ListView>(R.id.listNotes)
-        listNotes.adapter = ArrayAdapter(
+        binding.layoutContentNoteList.listNotes.adapter = ArrayAdapter(
             this, android.R.layout.simple_list_item_1,
             DataManager.notes)
 
-        listNotes.setOnItemClickListener { parent, view, position, id ->
+        binding.layoutContentNoteList.listNotes.setOnItemClickListener { parent, view, position, id ->
             val activityIntent = Intent(this, MainActivity::class.java)
             activityIntent.putExtra(EXTRA_NOTE_POSITON, position)
             startActivity(activityIntent)
