@@ -6,26 +6,29 @@ import com.google.android.material.snackbar.Snackbar
 import androidx.appcompat.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.ArrayAdapter
+import android.widget.Spinner
 import android.widget.TextView
+import com.example.notekeeper.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity()
 {
+    private lateinit var binding: ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?)
     {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-        setSupportActionBar(findViewById(R.id.toolbar))
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        val view = binding.root
+        setContentView(view)
+        setSupportActionBar(binding.toolbar)
 
-        findViewById<FloatingActionButton>(R.id.fab).setOnClickListener { view ->
-            var textDisplayedValue = findViewById<TextView>(R.id.textDisplayedValue)
+        val dm = DataManager()
+        val adapterCourses = ArrayAdapter<CourseInfo>(this, android.R.layout.simple_spinner_item, dm.courses.values.toList())
+        adapterCourses.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
 
-            val originalValue = textDisplayedValue.text.toString().toInt()
-            val newValue = originalValue * 2
-            textDisplayedValue.text = newValue.toString()
-            Snackbar.make(view, "Value $originalValue changed to $newValue", Snackbar.LENGTH_LONG)
-                    .show()
-        }
+        var spinnerCourses = findViewById<Spinner>(R.id.spinnerCourses)
+        spinnerCourses.adapter = adapterCourses
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean
