@@ -9,7 +9,7 @@
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appBarLayout2"
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:theme="@style/Theme.NoteKeeper.AppBarOverlay"
         app:layout_constraintEnd_toEndOf="parent"
@@ -31,14 +31,14 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
-    <include
-        layout="@layout/content_main"
-        tools:layout_conversion_absoluteHeight="675dp"
-        tools:layout_editor_absoluteY="56dp"
-        tools:layout_editor_absoluteX="0dp"
-        android:layout_height="wrap_content"
-        tools:layout_conversion_absoluteWidth="411dp"
-        android:layout_width="wrap_content" />
+<!--    <include-->
+<!--        layout="@layout/content_main"-->
+<!--        tools:layout_conversion_absoluteHeight="675dp"-->
+<!--        tools:layout_editor_absoluteY="56dp"-->
+<!--        tools:layout_editor_absoluteX="0dp"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        tools:layout_conversion_absoluteWidth="411dp"-->
+<!--        android:layout_width="wrap_content" />-->
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab"
