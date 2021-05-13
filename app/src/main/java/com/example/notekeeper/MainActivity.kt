@@ -44,8 +44,7 @@ class MainActivity : AppCompatActivity()
         binding.layoutContentMain.textNoteText.setText(note.text)
 
         val coursePosition = DataManager.courses.values.indexOf(note.course)
-        var spinnerCourses = findViewById<Spinner>(R.id.spinnerCourses)
-        spinnerCourses.setSelection(coursePosition)
+        binding.layoutContentMain.spinnerCourses.setSelection(coursePosition)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean
