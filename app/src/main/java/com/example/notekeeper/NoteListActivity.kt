@@ -3,9 +3,6 @@ package com.example.notekeeper
 import android.content.Intent
 import android.os.Bundle
 import android.widget.ArrayAdapter
-import android.widget.ListView
-import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.google.android.material.snackbar.Snackbar
 import androidx.appcompat.app.AppCompatActivity
 import com.example.notekeeper.databinding.ActivityNoteListBinding
 
@@ -31,7 +28,7 @@ class NoteListActivity : AppCompatActivity() {
 
         binding.layoutContentNoteList.listNotes.setOnItemClickListener { parent, view, position, id ->
             val activityIntent = Intent(this, MainActivity::class.java)
-            activityIntent.putExtra(EXTRA_NOTE_POSITON, position)
+            activityIntent.putExtra(EXTRA_NOTE_POSITION, position)
             startActivity(activityIntent)
         }
     }
