@@ -28,8 +28,15 @@ class NoteListActivity : AppCompatActivity() {
 
         binding.layoutContentNoteList.listNotes.setOnItemClickListener { parent, view, position, id ->
             val activityIntent = Intent(this, MainActivity::class.java)
-            activityIntent.putExtra(EXTRA_NOTE_POSITION, position)
+            activityIntent.putExtra(NOTE_POSITION, position)
             startActivity(activityIntent)
         }
+    }
+
+    override fun onResume()
+    {
+        super.onResume()
+        var contentBinding = binding.layoutContentNoteList
+        (contentBinding.listNotes.adapter as ArrayAdapter<NoteInfo>).notifyDataSetChanged()
     }
 }
