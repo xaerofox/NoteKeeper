@@ -6,6 +6,7 @@ import android.view.Menu
 import android.view.MenuItem
 import android.widget.ArrayAdapter
 import com.example.notekeeper.databinding.ActivityMainBinding
+import com.google.android.material.snackbar.Snackbar
 
 class MainActivity : AppCompatActivity()
 {
@@ -21,15 +22,15 @@ class MainActivity : AppCompatActivity()
         setSupportActionBar(binding.toolbar)
 
         val adapterCourses = ArrayAdapter<CourseInfo>(this, android.R.layout.simple_spinner_item,
-            DataManager.courses.values.toList())
+                DataManager.courses.values.toList())
         adapterCourses.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
 
         binding.layoutContentMain.spinnerCourses.adapter = adapterCourses
 
-        notePosition = savedInstanceState?.getInt(NOTE_POSITION, POSITION_NOT_SET) ?:
-                intent.getIntExtra(NOTE_POSITION, POSITION_NOT_SET)
+        notePosition = savedInstanceState?.getInt(NOTE_POSITION, POSITION_NOT_SET)
+                ?: intent.getIntExtra(NOTE_POSITION, POSITION_NOT_SET)
 
-        if(notePosition != POSITION_NOT_SET)
+        if (notePosition != POSITION_NOT_SET)
             displayNote()
         else
         {
@@ -46,6 +47,12 @@ class MainActivity : AppCompatActivity()
 
     private fun displayNote()
     {
+        if (notePosition > DataManager.notes.lastIndex)
+        {
+            showMessage("Note not found")
+            return
+        }
+
         val note = DataManager.notes[notePosition]
         binding.layoutContentMain.textNoteTitle.setText(note.title)
         binding.layoutContentMain.textNoteText.setText(note.text)
@@ -69,12 +76,24 @@ class MainActivity : AppCompatActivity()
         return when (item.itemId)
         {
             R.id.action_settings -> true
-            R.id.action_next -> {
-                moveNext()
+            R.id.action_next ->
+            {
+                if (notePosition < DataManager.notes.lastIndex)
+                    moveNext()
+                else
+                {
+                    val message = "No more notes"
+                    showMessage(message)
+                }
                 true
             }
             else -> super.onOptionsItemSelected(item)
         }
+    }
+
+    private fun showMessage(message: String)
+    {
+        Snackbar.make(binding.layoutContentMain.textNoteTitle, message, Snackbar.LENGTH_LONG).show()
     }
 
     private fun moveNext()
@@ -86,10 +105,10 @@ class MainActivity : AppCompatActivity()
 
     override fun onPrepareOptionsMenu(menu: Menu?): Boolean
     {
-        if(notePosition >= DataManager.notes.lastIndex)
+        if (notePosition >= DataManager.notes.lastIndex)
         {
             val menuItem = menu?.findItem(R.id.action_next)
-            if(menuItem != null)
+            if (menuItem != null)
             {
                 menuItem.icon = getDrawable(R.drawable.ic_block_white_24)
                 menuItem.isEnabled = false

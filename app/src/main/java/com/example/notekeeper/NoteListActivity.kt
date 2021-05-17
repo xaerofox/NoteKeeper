@@ -22,6 +22,8 @@ class NoteListActivity : AppCompatActivity() {
             startActivity(activityIntent)
         }
 
+
+
         binding.layoutContentNoteList.listNotes.adapter = ArrayAdapter(
             this, android.R.layout.simple_list_item_1,
             DataManager.notes)
