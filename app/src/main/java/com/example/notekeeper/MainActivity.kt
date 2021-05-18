@@ -13,7 +13,7 @@ class MainActivity : AppCompatActivity()
 {
     private lateinit var binding: ActivityMainBinding
     private var notePosition = POSITION_NOT_SET
-    private val tag = "MainActivity"
+    private val tag = this::class.simpleName
 
     override fun onCreate(savedInstanceState: Bundle?)
     {
