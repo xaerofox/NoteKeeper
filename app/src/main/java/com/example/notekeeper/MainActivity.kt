@@ -1,6 +1,7 @@
 package com.example.notekeeper
 
 import android.os.Bundle
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
@@ -12,6 +13,7 @@ class MainActivity : AppCompatActivity()
 {
     private lateinit var binding: ActivityMainBinding
     private var notePosition = POSITION_NOT_SET
+    private val tag = "MainActivity"
 
     override fun onCreate(savedInstanceState: Bundle?)
     {
@@ -34,9 +36,16 @@ class MainActivity : AppCompatActivity()
             displayNote()
         else
         {
-            DataManager.notes.add(NoteInfo())
-            notePosition = DataManager.notes.lastIndex
+            createNewNote()
         }
+
+        Log.d(tag, "onCreate")
+    }
+
+    private fun createNewNote()
+    {
+        DataManager.notes.add(NoteInfo())
+        notePosition = DataManager.notes.lastIndex
     }
 
     override fun onSaveInstanceState(outState: Bundle)
@@ -50,8 +59,11 @@ class MainActivity : AppCompatActivity()
         if (notePosition > DataManager.notes.lastIndex)
         {
             showMessage("Note not found")
+            Log.e(tag, "Invalid note position $notePosition, max valid position ${DataManager.notes.lastIndex}")
             return
         }
+
+        Log.i(tag, "Displaying note for position $notePosition")
 
         val note = DataManager.notes[notePosition]
         binding.layoutContentMain.textNoteTitle.setText(note.title)
@@ -122,6 +134,8 @@ class MainActivity : AppCompatActivity()
     {
         super.onPause()
         saveNote()
+
+        Log.d(tag, "onPause")
     }
 
     private fun saveNote()
