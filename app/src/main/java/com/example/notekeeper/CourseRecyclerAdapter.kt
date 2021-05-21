@@ -2,12 +2,14 @@ package com.jwhh.notekeeper
 
 import android.content.Context
 import android.content.Intent
-import android.support.design.widget.Snackbar
-import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.recyclerview.widget.RecyclerView
+import com.example.notekeeper.CourseInfo
+import com.example.notekeeper.R
+import com.google.android.material.snackbar.Snackbar
 
 class CourseRecyclerAdapter(private val context: Context, private val courses: List<CourseInfo>) :
         RecyclerView.Adapter<CourseRecyclerAdapter.ViewHolder>() {
@@ -25,7 +27,7 @@ class CourseRecyclerAdapter(private val context: Context, private val courses: L
         holder.coursePosition = position
     }
 
-    inner class ViewHolder(itemView: View?) : RecyclerView.ViewHolder(itemView) {
+    inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val textCourse = itemView?.findViewById<TextView?>(R.id.textCourse)
         var coursePosition = 0
         init {
