@@ -14,6 +14,7 @@ import androidx.test.ext.junit.rules.ActivityScenarioRule
 import org.junit.Rule
 import androidx.test.espresso.action.ViewActions.closeSoftKeyboard
 import androidx.test.espresso.assertion.ViewAssertions.matches
+import androidx.test.espresso.contrib.RecyclerViewActions
 
 @RunWith(AndroidJUnit4::class)
 class NextThroughNotesTest {
@@ -23,7 +24,12 @@ class NextThroughNotesTest {
     @Test
     fun nextThroughNotes()
     {
-        onData(allOf(instanceOf(NoteInfo::class.java), equalTo(DataManager.notes[0]))).perform(click())
+        //Following line does not work for some reason
+//        onData(allOf(instanceOf(NoteInfo::class.java), equalTo(DataManager.notes[0]))).perform(click())
+        onView(withId(R.id.listItems)).perform(
+            RecyclerViewActions.actionOnItemAtPosition<NoteRecyclerAdapter.ViewHolder>(0, click())
+        )
+
 
         for (index in 0..DataManager.notes.lastIndex)
         {
@@ -40,7 +46,7 @@ class NextThroughNotesTest {
                 onView(allOf(withId(R.id.action_next), isEnabled())).perform(click())
         }
 
-        onView(withId(R.id.action_next)).check(matches(isEnabled()))
+        onView(withId(R.id.action_next)).check(matches(not(isEnabled())))
     }
 
 }
