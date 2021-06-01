@@ -2,38 +2,45 @@ package com.example.notekeeper
 
 import android.content.Intent
 import android.os.Bundle
-import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.ActionBarDrawerToggle
-import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.google.android.material.snackbar.Snackbar
-import com.google.android.material.navigation.NavigationView
-import androidx.navigation.findNavController
-import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.navigateUp
-import androidx.navigation.ui.setupActionBarWithNavController
-import androidx.navigation.ui.setupWithNavController
-import androidx.drawerlayout.widget.DrawerLayout
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.LinearLayoutCompat
-import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.notekeeper.databinding.ActivityItemsBinding
-import com.example.notekeeper.databinding.ContentItemsBinding
+import com.google.android.material.navigation.NavigationView
+import com.google.android.material.snackbar.Snackbar
 import com.jwhh.notekeeper.CourseRecyclerAdapter
 
-class ItemsActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
+class ItemsActivity : AppCompatActivity(),
+    NavigationView.OnNavigationItemSelectedListener,
+    NoteRecyclerAdapter.OnNoteSelectedListener {
 
-    private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var binding: ActivityItemsBinding
 
-    private val noteLayoutManager by lazy { LinearLayoutManager(this) }
-    private val noteRecyclerAdapter by lazy { NoteRecyclerAdapter(this, DataManager.notes) }
 
-    private val courseLayoutManager by lazy { GridLayoutManager (this, 2) }
-    private val courseRecyclerAdapter by lazy { CourseRecyclerAdapter(this, DataManager.courses.values.toList()) }
+    private val noteLayoutManager by lazy { LinearLayoutManager(this) }
+    private val noteRecyclerAdapter by lazy {
+        val adapter = NoteRecyclerAdapter(this, DataManager.notes)
+        adapter.setOnSelectedListener(this)
+        adapter
+    }
+
+    private val courseLayoutManager by lazy { GridLayoutManager(this, 2) }
+    private val courseRecyclerAdapter by lazy {
+        CourseRecyclerAdapter(this,
+            DataManager.courses.values.toList())
+    }
+
+    private val recentlyViewedNoteRecyclerAdapter by lazy {
+        val adapter = NoteRecyclerAdapter(this, viewModel.recentlyViewedNotes)
+        adapter.setOnSelectedListener(this)
+        adapter
+    }
+
+    private val viewModel by lazy { ViewModelProvider(this)[ItemsActivityViewModel::class.java] }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -46,11 +53,11 @@ class ItemsActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelect
         setSupportActionBar(toolbar)
 
         binding.layoutAppBar.fab
-            .setOnClickListener { view ->
+            .setOnClickListener {
                 startActivity(Intent(this, MainActivity::class.java))
             }
 
-        displayNotes()
+        handleDisplayFunction(viewModel.navDrawerDisplaySelection)
 
         val drawerLayout = binding.drawerLayout
         val toggle = ActionBarDrawerToggle(
@@ -64,7 +71,7 @@ class ItemsActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelect
     }
 
     private fun displayNotes() {
-        var contentBinding = binding.layoutAppBar.layoutContentItems
+        val contentBinding = binding.layoutAppBar.layoutContentItems
 
         contentBinding.listItems.layoutManager = noteLayoutManager
         contentBinding.listItems.adapter = noteRecyclerAdapter
@@ -73,7 +80,7 @@ class ItemsActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelect
     }
 
     private fun displayCourses() {
-        var contentBinding = binding.layoutAppBar.layoutContentItems
+        val contentBinding = binding.layoutAppBar.layoutContentItems
 
         contentBinding.listItems.layoutManager = courseLayoutManager
         contentBinding.listItems.adapter = courseRecyclerAdapter
@@ -81,9 +88,19 @@ class ItemsActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelect
         binding.navView.menu.findItem(R.id.nav_courses).isChecked = true
     }
 
+    private fun displayRecentlyViewedNotes() {
+        val contentBinding = binding.layoutAppBar.layoutContentItems
+        val listItems = contentBinding.listItems
+
+        listItems.layoutManager = noteLayoutManager
+        listItems.adapter = recentlyViewedNoteRecyclerAdapter
+
+        binding.navView.menu.findItem(R.id.nav_recent_notes).isChecked = true
+    }
+
     override fun onResume() {
         super.onResume()
-        var contentBinding = binding.layoutAppBar.layoutContentItems
+        val contentBinding = binding.layoutAppBar.layoutContentItems
         contentBinding.listItems.adapter?.notifyDataSetChanged()
     }
 
@@ -94,12 +111,13 @@ class ItemsActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelect
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
+        // Handle navigation view item clicks here
         when (item.itemId) {
-            R.id.nav_notes -> {
-                displayNotes()
-            }
-            R.id.nav_courses -> {
-                displayCourses()
+            R.id.nav_notes,
+            R.id.nav_courses,
+            R.id.nav_recent_notes -> {
+                handleDisplayFunction(item.itemId)
+                viewModel.navDrawerDisplaySelection = item.itemId
             }
             R.id.nav_share -> {
                 handleSelection("Don't you think you've SHARED enough")
@@ -113,9 +131,29 @@ class ItemsActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelect
         return true
     }
 
+    private fun handleDisplayFunction(itemId: Int) {
+        when (itemId) {
+            R.id.nav_notes -> {
+                displayNotes()
+            }
+            R.id.nav_courses -> {
+                displayCourses()
+            }
+            R.id.nav_recent_notes -> {
+                displayRecentlyViewedNotes()
+            }
+        }
+    }
+
     private fun handleSelection(message: String) {
-        var listItems = binding.layoutAppBar.layoutContentItems.listItems
+        val listItems = binding.layoutAppBar.layoutContentItems.listItems
 
         Snackbar.make(listItems, message, Snackbar.LENGTH_LONG).show()
     }
+
+    override fun onNoteSelected(note: NoteInfo) {
+        viewModel.addToRecentlyViewedNotes(note)
+    }
+
+
 }

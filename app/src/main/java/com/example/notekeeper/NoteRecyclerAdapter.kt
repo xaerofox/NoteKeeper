@@ -3,25 +3,29 @@ package com.example.notekeeper
 import android.content.Context
 import android.content.Intent
 import android.view.LayoutInflater
+import android.view.OrientationEventListener
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
 class NoteRecyclerAdapter(private val context: Context, private val notes: List<NoteInfo>) :
-    RecyclerView.Adapter<NoteRecyclerAdapter.ViewHolder>()
-{
+    RecyclerView.Adapter<NoteRecyclerAdapter.ViewHolder>() {
     private val layoutInflater = LayoutInflater.from(context)
+    private var onNoteSelectedListener: OnNoteSelectedListener? = null
 
+    interface OnNoteSelectedListener {
+        fun onNoteSelected(note: NoteInfo)
+    }
 
-    inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
-    {
+    inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val textCourse = itemView?.findViewById<TextView?>(R.id.textCourse)
         val textTitle = itemView?.findViewById<TextView?>(R.id.textTitle)
         var notePosition = 0
 
         init {
-            itemView.setOnClickListener {
+            itemView?.setOnClickListener {
+                onNoteSelectedListener?.onNoteSelected(notes[notePosition])
                 val intent = Intent(context, MainActivity::class.java)
                 intent.putExtra(NOTE_POSITION, notePosition)
                 context.startActivity(intent)
@@ -41,5 +45,9 @@ class NoteRecyclerAdapter(private val context: Context, private val notes: List<
         holder.textCourse?.text = note.course?.title
         holder.textTitle?.text = note.title
         holder.notePosition = position
+    }
+
+    fun setOnSelectedListener(listener: OnNoteSelectedListener) {
+        onNoteSelectedListener = listener
     }
 }
