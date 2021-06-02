@@ -30,8 +30,10 @@ class ItemsActivity : AppCompatActivity(),
 
     private val courseLayoutManager by lazy { GridLayoutManager(this, 2) }
     private val courseRecyclerAdapter by lazy {
-        CourseRecyclerAdapter(this,
-            DataManager.courses.values.toList())
+        CourseRecyclerAdapter(
+            this,
+            DataManager.courses.values.toList()
+        )
     }
 
     private val recentlyViewedNoteRecyclerAdapter by lazy {
@@ -57,6 +59,11 @@ class ItemsActivity : AppCompatActivity(),
                 startActivity(Intent(this, MainActivity::class.java))
             }
 
+        if(savedInstanceState != null)
+        {
+            viewModel.navDrawerDisplaySelection = savedInstanceState.getInt(viewModel.navDrawerDisplaySelectionName)
+        }
+
         handleDisplayFunction(viewModel.navDrawerDisplaySelection)
 
         val drawerLayout = binding.drawerLayout
@@ -68,6 +75,15 @@ class ItemsActivity : AppCompatActivity(),
 
         val navView: NavigationView = findViewById(R.id.nav_view)
         navView.setNavigationItemSelectedListener(this)
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        if (outState != null)
+            outState.putInt(
+                viewModel.navDrawerDisplaySelectionName,
+                viewModel.navDrawerDisplaySelection
+            )
     }
 
     private fun displayNotes() {

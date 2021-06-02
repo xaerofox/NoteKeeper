@@ -6,7 +6,8 @@ class ItemsActivityViewModel : ViewModel()
 {
     private val maxRecentlyViewedNotes = 5
     val recentlyViewedNotes = ArrayList<NoteInfo>(maxRecentlyViewedNotes)
-
+    val navDrawerDisplaySelectionName =
+        "com.example.notekeeper.ItemsActivityViewModel.navDrawerDisplaySelection"
     var navDrawerDisplaySelection = R.id.nav_notes
 
     fun addToRecentlyViewedNotes(note: NoteInfo) {
