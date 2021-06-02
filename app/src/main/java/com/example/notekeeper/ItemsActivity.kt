@@ -59,10 +59,11 @@ class ItemsActivity : AppCompatActivity(),
                 startActivity(Intent(this, MainActivity::class.java))
             }
 
-        if(savedInstanceState != null)
+        if(viewModel.isNewlyCreated && savedInstanceState != null)
         {
-            viewModel.navDrawerDisplaySelection = savedInstanceState.getInt(viewModel.navDrawerDisplaySelectionName)
+            viewModel.restoreState(savedInstanceState)
         }
+        viewModel.isNewlyCreated = false
 
         handleDisplayFunction(viewModel.navDrawerDisplaySelection)
 
@@ -80,10 +81,7 @@ class ItemsActivity : AppCompatActivity(),
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         if (outState != null)
-            outState.putInt(
-                viewModel.navDrawerDisplaySelectionName,
-                viewModel.navDrawerDisplaySelection
-            )
+            viewModel.saveState(outState)
     }
 
     private fun displayNotes() {

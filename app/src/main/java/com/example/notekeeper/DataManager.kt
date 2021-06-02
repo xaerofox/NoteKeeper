@@ -105,4 +105,40 @@ object DataManager {
         course = CourseInfo("kotlin_like_c_sharp", "The Similarities between Kotlin and C#")
         courses[course.courseId] = course
     }
+
+    private fun simulateLoadDelay() {
+        Thread.sleep(1000)
+    }
+
+    fun loadNotes(): List<NoteInfo> {
+        simulateLoadDelay()
+        return notes
+    }
+
+    fun loadNotes(vararg noteIds: Int): List<NoteInfo> {
+        simulateLoadDelay()
+        val noteList: List<NoteInfo>
+
+        if(noteIds.isEmpty())
+            noteList = notes
+        else {
+            noteList = ArrayList<NoteInfo>(noteIds.size)
+            for(noteId in noteIds)
+                noteList.add(notes[noteId])
+        }
+        return noteList
+    }
+
+    fun loadNote(noteId: Int) = notes[noteId]
+
+    fun isLastNoteId(noteId: Int) = noteId == notes.lastIndex
+
+    fun idOfNote(note: NoteInfo) = notes.indexOf(note)
+
+    fun noteIdsAsIntArray(notes: ArrayList<NoteInfo>): IntArray {
+        val noteIds = IntArray(notes.size)
+        for(index in 0..notes.lastIndex)
+            noteIds[index] = DataManager.idOfNote(notes[index])
+        return noteIds
+    }
 }
