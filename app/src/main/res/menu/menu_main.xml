@@ -13,4 +13,9 @@
         android:orderInCategory="101"
         android:title="Next"
         app:showAsAction="ifRoom|withText" />
+    <item
+        android:id="@+id/action_get_together"
+        android:icon="@drawable/ic_baseline_people_24"
+        android:title="Get together"
+        app:showAsAction="ifRoom" />
 </menu>
