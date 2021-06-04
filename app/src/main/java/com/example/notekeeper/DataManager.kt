@@ -1,7 +1,5 @@
 package com.example.notekeeper
 
-import android.icu.text.CaseMap
-
 object DataManager {
     val courses = HashMap<String, CourseInfo>()
     val notes = ArrayList<NoteInfo>()
@@ -122,7 +120,7 @@ object DataManager {
         if(noteIds.isEmpty())
             noteList = notes
         else {
-            noteList = ArrayList<NoteInfo>(noteIds.size)
+            noteList = ArrayList(noteIds.size)
             for(noteId in noteIds)
                 noteList.add(notes[noteId])
         }
@@ -138,7 +136,7 @@ object DataManager {
     fun noteIdsAsIntArray(notes: ArrayList<NoteInfo>): IntArray {
         val noteIds = IntArray(notes.size)
         for(index in 0..notes.lastIndex)
-            noteIds[index] = DataManager.idOfNote(notes[index])
+            noteIds[index] = idOfNote(notes[index])
         return noteIds
     }
 }
