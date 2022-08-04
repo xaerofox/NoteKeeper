@@ -5,6 +5,7 @@ import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
+import android.graphics.drawable.Drawable
 import android.util.AttributeSet
 import android.widget.SeekBar
 import androidx.core.content.ContextCompat
@@ -16,6 +17,26 @@ class ColorSlider @JvmOverloads constructor(
     defStyleAttr: Int = R.attr.seekBarStyle,
     defStyleRes: Int = 0
 ) : SeekBar(context, attrs, defStyleAttr, defStyleRes) {
+    private val w = 48f
+    private val h = 48f
+    private val halfW = if (w >= 0) w / 2f else 1f
+    private val halfH = if (h >= 0) h / 2f else 1f
+    private val paint = Paint()
+
+    private var noColorDrawable: Drawable? = null
+        set(value) {
+            val w2 = value?.intrinsicWidth ?: 0
+            val h2 = value?.intrinsicHeight ?: 0
+            val halfW2 = if (w2 >= 0) w2 / 2 else 1
+            val halfH2 = if (h2 >= 0) h2 / 2 else 1
+            value?.setBounds(-halfW2, -halfH2, halfW2, halfH2)
+            field = value
+        }
+    var w2 = 0
+    private var h2 = 0
+    private var halfW2 = 1
+    private var halfH2 = 1
+
     private var colors: ArrayList<Int> = arrayListOf(Color.RED, Color.YELLOW, Color.BLUE)
 
     init {
@@ -38,6 +59,7 @@ class ColorSlider @JvmOverloads constructor(
         splitTrack = false
         setPadding(paddingLeft, paddingTop, paddingRight, paddingBottom + 50)
         thumb = context.getDrawable(R.drawable.ic_color_slider_thumb)
+        noColorDrawable = context.getDrawable(R.drawable.ic_no_color)
 
         setOnSeekBarChangeListener(object : OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
@@ -55,14 +77,13 @@ class ColorSlider @JvmOverloads constructor(
     }
 
     var selectedColorValue: Int = android.R.color.transparent
-    set(value) {
-        var index = colors.indexOf(value)
-        if(index == -1) {
-            progress = 0
+        set(value) {
+            var index = colors.indexOf(value)
+            if (index == -1) {
+                progress = 0
+            } else
+                progress = index
         }
-        else
-            progress = index
-    }
 
     private var listeners: ArrayList<(Int) -> Unit> = arrayListOf()
 
@@ -81,23 +102,11 @@ class ColorSlider @JvmOverloads constructor(
             val saveCount = canvas.save()
             canvas.translate(paddingLeft.toFloat(), (height / 2).toFloat() + 50f)
             if (count > 1) {
-                val w = 48f
-                val h = 48f
-                val halfW = if (w >= 0) w / 2f else 1f
-                val halfH = if (h >= 0) h / 2f else 1f
                 val spacing = (width - paddingLeft - paddingRight) / (count - 1).toFloat()
                 for (i in 0 until count) {
                     if (i == 0) {
-                        val drawable = context.getDrawable(R.drawable.ic_no_color)
-                        val w2 = drawable?.intrinsicWidth ?: 0
-                        val h2 = drawable?.intrinsicHeight ?: 0
-                        val halfW2 = if (w2 >= 0) w2 / 2 else 1
-                        val halfH2 = if (h2 >= 0) h2 / 2 else 1
-                        drawable?.setBounds(-halfW2, -halfH2, halfW2, halfH2)
-                        drawable?.draw(canvas)
-                    }
-                    else {
-                        val paint = Paint()
+                        noColorDrawable?.draw(canvas)
+                    } else {
                         paint.color = colors[i]
                         canvas.drawRect(-halfW, -halfH, halfW, halfH, paint)
                     }
