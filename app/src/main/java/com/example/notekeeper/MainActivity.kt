@@ -41,8 +41,8 @@ class MainActivity : AppCompatActivity() {
         else
             createNewNote()
 
-        binding.layoutContentMain.colorSelector.addListeners { color ->
-            noteColor = color
+        binding.layoutContentMain.colorSelector.addListeners {
+            noteColor = it
         }
 
         Log.d(tag, "onCreate")
