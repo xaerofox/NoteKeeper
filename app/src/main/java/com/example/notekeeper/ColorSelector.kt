@@ -19,13 +19,33 @@ class ColorSelector @JvmOverloads constructor(
     private var listOfColors = listOf(Color.BLUE, Color.RED, Color.GREEN)
     private var selectedColorIndex = 0
 
-    private var colorSelectListener: ColorSelectListener? = null
+    private var colorSelectListeners: ArrayList<(Int) -> Unit> = arrayListOf()
 
-    interface ColorSelectListener {
-        fun onColorSelected(color: Int)
+    fun addListeners(function: (Int) -> Unit) {
+        this.colorSelectListeners.add(function)
     }
 
+    var selectedColorValue: Int = android.R.color.transparent
+        set(value) {
+
+            var index = listOfColors.indexOf(value)
+            if (index == -1) {
+                findViewById<CheckBox>(R.id.colorEnabled).isChecked = false
+                index = 0
+            } else findViewById<CheckBox>(R.id.colorEnabled).isChecked = true
+
+            selectedColorIndex = index
+            findViewById<View>(R.id.selectedColor).setBackgroundColor(listOfColors[selectedColorIndex])
+        }
+
     init {
+        val typedArray = context.obtainStyledAttributes(attrs, R.styleable.ColorSelector)
+        listOfColors = typedArray.getTextArray(R.styleable.ColorSelector_colors)
+            .map {
+                Color.parseColor(it.toString())
+            }
+        typedArray.recycle()
+
         orientation = LinearLayout.HORIZONTAL
 
         val inflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
@@ -46,22 +66,6 @@ class ColorSelector @JvmOverloads constructor(
         colorEnabled.setOnCheckedChangeListener { buttonView, isChecked ->
             broadcastColor()
         }
-    }
-
-    fun setColorSelectListener(listener: ColorSelectListener) {
-        this.colorSelectListener = listener
-    }
-
-    fun setSelectedColor(color: Int) {
-        var index = listOfColors.indexOf(color)
-        if (index == -1) {
-            findViewById<CheckBox>(R.id.colorEnabled).isChecked = false
-            index = 0
-        }
-        else findViewById<CheckBox>(R.id.colorEnabled).isChecked = true
-
-        selectedColorIndex = index
-        findViewById<View>(R.id.selectedColor).setBackgroundColor(listOfColors[selectedColorIndex])
     }
 
     private fun selectNextColor() {
@@ -92,6 +96,6 @@ class ColorSelector @JvmOverloads constructor(
             listOfColors[selectedColorIndex]
         else
             Color.TRANSPARENT
-        this.colorSelectListener?.onColorSelected(color)
+        this.colorSelectListeners.forEach { function -> function(color) }
     }
 }

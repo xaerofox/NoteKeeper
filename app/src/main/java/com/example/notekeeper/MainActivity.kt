@@ -41,13 +41,9 @@ class MainActivity : AppCompatActivity() {
         else
             createNewNote()
 
-        binding.layoutContentMain.colorSelector.setColorSelectListener(object :
-            ColorSelector.ColorSelectListener {
-            override fun onColorSelected(color: Int) {
-                noteColor = color
-            }
-
-        })
+        binding.layoutContentMain.colorSelector.addListeners { color ->
+            noteColor = color
+        }
 
         Log.d(tag, "onCreate")
     }
@@ -77,7 +73,7 @@ class MainActivity : AppCompatActivity() {
         val note = DataManager.notes[notePosition]
         binding.layoutContentMain.textNoteTitle.setText(note.title)
         binding.layoutContentMain.textNoteText.setText(note.text)
-        binding.layoutContentMain.colorSelector.setSelectedColor(note.color)
+        binding.layoutContentMain.colorSelector.selectedColorValue = note.color
         noteColor = note.color
 
         val coursePosition = DataManager.courses.values.indexOf(note.course)

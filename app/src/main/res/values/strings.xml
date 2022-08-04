@@ -22,4 +22,14 @@
     <string name="menu_slideshow">Slideshow</string>
     <string name="openNav">Open navigation drawer</string>
     <string name="closeNav">Close navigation drawer</string>
+
+    <string-array name="note_color_array">
+        <item>#e57373</item>
+        <item>#ba68c8</item>
+        <item>#64b5f6</item>
+        <item>#81c784</item>
+        <item>#fff176</item>
+        <item>#ffb74d</item>
+        <item>#90a4ae</item>
+    </string-array>
 </resources>
