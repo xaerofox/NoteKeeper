@@ -7,6 +7,7 @@ import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.drawable.Drawable
 import android.util.AttributeSet
+import android.util.TypedValue
 import android.widget.SeekBar
 import androidx.core.content.ContextCompat
 
@@ -17,8 +18,8 @@ class ColorSlider @JvmOverloads constructor(
     defStyleAttr: Int = R.attr.seekBarStyle,
     defStyleRes: Int = 0
 ) : SeekBar(context, attrs, defStyleAttr, defStyleRes) {
-    private val w = 48f
-    private val h = 48f
+    private val w = getPixelValueFromDP(16f)
+    private val h = getPixelValueFromDP(16f)
     private val halfW = if (w >= 0) w / 2f else 1f
     private val halfH = if (h >= 0) h / 2f else 1f
     private val paint = Paint()
@@ -57,7 +58,7 @@ class ColorSlider @JvmOverloads constructor(
             ContextCompat.getColorStateList(context, android.R.color.transparent)
         progressTintList = ContextCompat.getColorStateList(context, android.R.color.transparent)
         splitTrack = false
-        setPadding(paddingLeft, paddingTop, paddingRight, paddingBottom + 50)
+        setPadding(paddingLeft, paddingTop, paddingRight, paddingBottom + getPixelValueFromDP(16f).toInt())
         thumb = context.getDrawable(R.drawable.ic_color_slider_thumb)
         noColorDrawable = context.getDrawable(R.drawable.ic_no_color)
 
@@ -100,7 +101,7 @@ class ColorSlider @JvmOverloads constructor(
         canvas?.let {
             val count = colors.size
             val saveCount = canvas.save()
-            canvas.translate(paddingLeft.toFloat(), (height / 2).toFloat() + 50f)
+            canvas.translate(paddingLeft.toFloat(), (height / 2).toFloat() + getPixelValueFromDP(16f))
             if (count > 1) {
                 val spacing = (width - paddingLeft - paddingRight) / (count - 1).toFloat()
                 for (i in 0 until count) {
@@ -116,4 +117,11 @@ class ColorSlider @JvmOverloads constructor(
             }
         }
     }
+
+    private fun getPixelValueFromDP(value: Float): Float =
+        TypedValue.applyDimension(
+            TypedValue.COMPLEX_UNIT_DIP,
+            value,
+            context.resources.displayMetrics
+        )
 }
