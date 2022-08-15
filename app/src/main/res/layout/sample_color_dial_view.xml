@@ -1,0 +1,15 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <com.example.notekeeper.ui.ColorDialView
+        android:layout_width="297dp"
+        android:layout_height="322dp"
+        android:padding="15dp"
+        app:dialDiameter="100dp"
+        app:scaleToFit="true"
+        app:tickPadding="50dp"
+        app:tickRadius="10dp" />
+
+</FrameLayout>
