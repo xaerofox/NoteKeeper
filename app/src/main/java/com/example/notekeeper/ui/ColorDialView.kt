@@ -9,8 +9,12 @@ import android.graphics.drawable.Drawable
 import android.text.TextPaint
 import android.util.AttributeSet
 import android.util.TypedValue
+import android.view.MotionEvent
+import android.view.MotionEvent.*
 import android.view.View
 import com.example.notekeeper.R
+import kotlin.math.atan2
+import kotlin.math.roundToInt
 
 class ColorDialView @JvmOverloads constructor(
     context: Context,
@@ -53,6 +57,13 @@ class ColorDialView @JvmOverloads constructor(
     private var tickPositionVertical = 0f
     private var centerHorizontal = 0f
     private var centerVertical = 0f
+
+    //View interaction values
+    private var dragStartX = 0f
+    private var dragStartY = 0f
+    private var dragging = false
+    private var snapAngle = 0f
+    private var selectedPosition = 0
 
     init {
         val typedArray = context.obtainStyledAttributes(attrs, R.styleable.ColorDialView)
@@ -113,6 +124,7 @@ class ColorDialView @JvmOverloads constructor(
             )
         }
         canvas.restoreToCount(saveCount)
+        canvas.rotate(snapAngle, centerHorizontal, centerVertical)
         canvas.translate(centerHorizontal, centerVertical)
         dialDrawable?.draw(canvas)
     }
@@ -144,6 +156,82 @@ class ColorDialView @JvmOverloads constructor(
             val height = resolveSizeAndState(verticalSize.toInt(), heightMeasureSpec, 0)
             setMeasuredDimension(width, height)
         }
+    }
+
+    override fun onTouchEvent(event: MotionEvent?): Boolean {
+        dragStartX = event!!.x
+        dragStartY = event!!.y
+
+        if(event.action == ACTION_DOWN || event.action == ACTION_MOVE) {
+            dragging = true
+
+            //Figure out snap angle
+            if(getSnapAngle(dragStartX, dragStartY)) {
+                broadcastColorChange()
+                invalidate()
+            }
+        }
+        if(event.action == ACTION_UP) {
+            dragging = false
+        }
+
+        return true
+    }
+
+    var selectedColorValue: Int = android.R.color.transparent
+        set(value) {
+            val index = colors.indexOf(value)
+            selectedPosition = if (index == -1) 0 else index
+            snapAngle = (selectedPosition * angleBetweenColors).toFloat()
+            invalidate()
+        }
+
+    private var listeners: ArrayList<(Int) -> Unit> = arrayListOf()
+
+    fun addListeners(function: (Int) -> Unit) {
+        listeners.add(function)
+    }
+
+    private fun broadcastColorChange() {
+        listeners.forEach {
+            if(selectedPosition > colors.size - 1)
+                it(colors[0])
+            else
+                it(colors[selectedPosition])
+        }
+    }
+
+    private fun cartesianToPolar(x: Float, y: Float): Float {
+        val angle = Math.toDegrees((atan2(y.toDouble(), x.toDouble()))).toFloat()
+
+        return when (angle) {
+            in 0f..180f -> angle
+            in -180f..0f -> angle + 360
+            else -> angle
+        }
+    }
+
+    private fun getSnapAngle(x: Float, y: Float): Boolean {
+        var dragAngle = cartesianToPolar(
+            x - horizontalSize / 2,
+            (verticalSize - y) - verticalSize / 2
+        )
+        var nearest: Int = (getNearestAngle(dragAngle) / angleBetweenColors).roundToInt()
+        var newAngle: Float = nearest * angleBetweenColors
+        var shouldUpdate = false
+
+        if(newAngle != snapAngle) {
+            shouldUpdate = true
+            selectedPosition = nearest
+        }
+        snapAngle = newAngle
+        return shouldUpdate
+    }
+
+    private fun getNearestAngle(dragAngle: Float): Float {
+        var adjustedAngle = (360 - dragAngle) + 90
+        while (adjustedAngle > 360) adjustedAngle -= 360
+        return adjustedAngle
     }
 
     private fun refreshValues(withScale: Boolean) {
